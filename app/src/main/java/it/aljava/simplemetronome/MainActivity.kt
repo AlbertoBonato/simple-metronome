@@ -1,20 +1,18 @@
 package it.aljava.simplemetronome
 
-import android.annotation.SuppressLint
 import android.media.MediaPlayer
 import android.media.PlaybackParams
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import it.aljava.simplemetronome.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: MainActivityViewModel
+    private lateinit var viewModel: MainViewModel
     private lateinit var binding: ActivityMainBinding
     private lateinit var metronome: MediaPlayer
     private val tracks: List<Uri> = listOf(
@@ -25,17 +23,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         metronome = MediaPlayer.create(this, tracks.elementAt(1))
         metronome.isLooping = true
-        metronome.setOnErrorListener(object :MediaPlayer.OnErrorListener{
-            override fun onError(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
-                Log.e("MainActivity" , "Metronome error what $what" +
-                        ", extra $extra")
-                return true
-            }
-        })
-        viewModel = ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
+        metronome.setOnErrorListener { _, what, extra ->
+            Log.e("MainActivity" , "Metronome error what $what" +
+                    ", extra $extra")
+            true
+        }
+        viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.mainActivityViewModel = viewModel
+        binding.mainViewModel = viewModel
         binding.setLifecycleOwner(this)
         // observer start-stop
         viewModel.metronomeOn.observe(this, Observer {
@@ -87,15 +83,10 @@ class MainActivity : AppCompatActivity() {
         viewModel.speedRate.value?.let { it1 -> newPlaybackParams.setSpeed(it1) }
         metronome.playbackParams = newPlaybackParams
         metronome.prepare()
+        metronome.isLooping = true
         restart.let {
             if (it) metronome.start()
         }
-    }
-
-    override fun onPause() {
-        metronome.pause()
-        viewModel.switchOffMetronome()
-        super.onPause()
     }
 
     override fun onDestroy() {

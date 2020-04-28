@@ -1,12 +1,11 @@
 package it.aljava.simplemetronome
 
-import android.util.Log
 import android.widget.SeekBar
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class MainActivityViewModel : ViewModel() {
+class MainViewModel : ViewModel() {
 
     private val initialBpm = 120
     private val bpmProgressOffset = 20
@@ -25,26 +24,24 @@ class MainActivityViewModel : ViewModel() {
     private val _metronomeOn = MutableLiveData<Boolean>()
     val metronomeOn: LiveData<Boolean>
         get() = _metronomeOn
-    /*
-        0 --> R.raw.loop_40_bpm
-        1 --> R.raw.loop_120_bpm
+
+    /**
+     * 0 --> R.raw.loop_40_bpm
+     * 1 --> R.raw.loop_120_bpm
      */
     private val _trackSelected = MutableLiveData<Int>()
 
-    /*
-    Updated when at least one between speedRate and trackSelected changes
-    metronomeParams.first = false   -> only speedRate changes
-    metronomeParams.first = true    -> both speedRate and trackSelected changes
-    metronomeParams.second = id of track selected (0 o 1)
-    Initialization value: (null, 0)
+    /**
+     * Updated when at least one between speedRate and trackSelected changes
+     * metronomeParams.first = false   -> only speedRate changes
+     * metronomeParams.first = true    -> both speedRate and trackSelected changes
+     * metronomeParams.second = id of track selected (0 o 1)
+     *
+     * Initialization value: (null, 0)
      */
     private val _metronomeParams = MutableLiveData<Pair<Boolean?, Int>>()
     val metronomeParams: LiveData<Pair<Boolean?, Int>>
         get() = _metronomeParams
-
-    private val _playButtonText = MutableLiveData<String>()
-    val playButtonText: LiveData<String>
-        get() = _playButtonText
 
     val bpmString = MutableLiveData<String>()
 
@@ -56,7 +53,6 @@ class MainActivityViewModel : ViewModel() {
         _trackSelected.value = 1
         _speedRate.value = getSpeedRateFromBpmAndTrack(bpm.value!!, _trackSelected.value!!)
         _metronomeParams.value = Pair(null, _trackSelected.value!!)
-        _playButtonText.value = "Play"
     }
 
     fun switchOffMetronome() {
@@ -93,7 +89,6 @@ class MainActivityViewModel : ViewModel() {
         val newBpm = bpmFromProgress(seek.progress)
         val tc = trackChanged(newBpm, bpm.value!!)
         _trackSelected.value = checkTrackToPlay(newBpm)
-        Log.i("AAAA_VM", "trackChanged $tc")
         _progress.value = seek.progress
         bpm.value = newBpm
         bpmString.value = newBpm.toString()
@@ -106,11 +101,8 @@ class MainActivityViewModel : ViewModel() {
     }
 
     private fun trackChanged(newBpm: Int, oldBpm: Int): Boolean {
-        if (newBpm < changeTrackBpmThreshold
-            && oldBpm >= changeTrackBpmThreshold) {
-            return true
-        } else return newBpm >= changeTrackBpmThreshold
-                && oldBpm < changeTrackBpmThreshold
+        return if (changeTrackBpmThreshold in (newBpm + 1)..oldBpm) true
+        else changeTrackBpmThreshold in (oldBpm + 1)..newBpm
     }
 
     private fun checkTrackToPlay(bpm: Int): Int {
@@ -120,7 +112,7 @@ class MainActivityViewModel : ViewModel() {
 
     private fun getSpeedRateFromBpmAndTrack(bpm: Int, track: Int): Float {
         return if (track == 0) {
-            bpm.div(this.initialBpm.toFloat())?.times(3)
+            bpm.div(this.initialBpm.toFloat()).times(3)
         } else {
             bpm.div(this.initialBpm.toFloat())
         }

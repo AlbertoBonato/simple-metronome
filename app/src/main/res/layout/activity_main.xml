@@ -5,8 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools">
     <data>
         <variable
-            name="mainActivityViewModel"
-            type="it.aljava.simplemetronome.MainActivityViewModel" />
+            name="mainViewModel"
+            type="it.aljava.simplemetronome.MainViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -23,9 +23,9 @@
             android:layout_marginBottom="32dp"
             android:layout_weight="1"
             android:max="280"
-            android:onProgressChanged="@{mainActivityViewModel::onProgressChanged}"
-            android:onStopTrackingTouch="@{mainActivityViewModel::onStopTrackingTouch}"
-            android:progress="@{mainActivityViewModel.progress}"
+            android:onProgressChanged="@{mainViewModel::onProgressChanged}"
+            android:onStopTrackingTouch="@{mainViewModel::onStopTrackingTouch}"
+            android:progress="@{mainViewModel.progress}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -39,7 +39,7 @@
             android:layout_marginTop="64dp"
             android:layout_marginEnd="16dp"
             android:layout_weight="1"
-            android:onClick="@{() -> mainActivityViewModel.togglePlayback()}"
+            android:onClick="@{() -> mainViewModel.togglePlayback()}"
             android:soundEffectsEnabled="false"
             android:text="@string/play_button_play"
             android:background="@color/green"
@@ -54,7 +54,7 @@
             android:layout_marginStart="16dp"
             android:fontFamily="@font/roboto"
             android:text="-"
-            android:onClick="@{() -> mainActivityViewModel.decrementBpm()}"
+            android:onClick="@{() -> mainViewModel.decrementBpm()}"
             android:textSize="36sp"
             android:soundEffectsEnabled="false"
             app:layout_constraintBaseline_toBaselineOf="@+id/metronome_bpm"
@@ -69,7 +69,7 @@
             android:layout_marginTop="64dp"
             android:layout_weight="1"
             android:fontFamily="@font/roboto"
-            android:text="@{mainActivityViewModel.bpmString}"
+            android:text="@{mainViewModel.bpmString}"
             android:textAlignment="center"
             android:textSize="36sp"
             app:layout_constraintEnd_toStartOf="@+id/plus_button"
@@ -86,7 +86,7 @@
             android:text="+"
             android:textSize="36sp"
             android:soundEffectsEnabled="false"
-            android:onClick="@{() -> mainActivityViewModel.incrementBpm()}"
+            android:onClick="@{() -> mainViewModel.incrementBpm()}"
             app:layout_constraintBaseline_toBaselineOf="@+id/metronome_bpm"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
